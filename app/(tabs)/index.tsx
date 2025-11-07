@@ -9,6 +9,7 @@ import {
     Image,
     RefreshControl,
     StyleSheet,
+    TextInput,
     TouchableOpacity,
     View,
 } from 'react-native';
@@ -21,12 +22,13 @@ export default function HomeScreen() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
-  const fetchBooks = async () => {
+  const fetchBooks = async (query: string = 'javascript') => {
     try {
       setError(null);
-      // Search for programming and computer science books
-      const url = `${OPEN_LIBRARY_API}?q=javascript&limit=20`;
+      setLoading(true);
+      const url = `${OPEN_LIBRARY_API}?q=${encodeURIComponent(query)}&limit=20`;
       
       console.log('Fetching books from Open Library...');
       const response = await fetch(url, {
@@ -57,6 +59,12 @@ export default function HomeScreen() {
     } finally {
       setLoading(false);
       setRefreshing(false);
+    }
+  };
+
+  const handleSearch = () => {
+    if (searchQuery.trim()) {
+      fetchBooks(searchQuery);
     }
   };
 
@@ -106,9 +114,20 @@ export default function HomeScreen() {
 
   const renderHeader = () => (
     <View style={styles.header}>
-      <ThemedText type="title">StudyShelf</ThemedText>
-      <ThemedText style={styles.subtitle}>Your digital library for academic success</ThemedText>
       <ThemedText style={styles.welcomeText}>Welcome back, {username}!</ThemedText>
+      <View style={styles.searchContainer}>
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Search for books..."
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          onSubmitEditing={handleSearch}
+          returnKeyType="search"
+        />
+        <TouchableOpacity style={styles.searchButton} onPress={handleSearch}>
+          <ThemedText style={styles.searchButtonText}>Search</ThemedText>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 
@@ -165,16 +184,34 @@ const styles = StyleSheet.create({
   },
   header: {
     marginBottom: 20,
-    alignItems: 'center',
-  },
-  subtitle: {
-    marginTop: 8,
-    opacity: 0.7,
-    textAlign: 'center',
   },
   welcomeText: {
-    marginTop: 16,
+    fontSize: 18,
+    fontWeight: '600',
+    marginBottom: 16,
+  },
+  searchContainer: {
+    flexDirection: 'row',
+    gap: 8,
+    marginBottom: 16,
+  },
+  searchInput: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    padding: 12,
     fontSize: 16,
+    backgroundColor: '#fff',
+  },
+  searchButton: {
+    backgroundColor: '#007AFF',
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    justifyContent: 'center',
+  },
+  searchButtonText: {
+    color: '#fff',
     fontWeight: '600',
   },
   row: {

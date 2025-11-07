@@ -1,67 +1,72 @@
-import { Tabs, useRouter } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 import React from 'react';
-import { StyleSheet, TouchableOpacity } from 'react-native';
+import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
 
-import { HapticTab } from '@/components/haptic-tab';
 import { ThemedText } from '@/components/themed-text';
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
-import { logout } from '@/store/auth-slice';
-import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { AppImages } from '@/constants/app-images';
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
-  const username = useAppSelector((state) => state.auth.username);
-  const dispatch = useAppDispatch();
   const router = useRouter();
 
-  const handleLogout = () => {
-    dispatch(logout());
-    router.replace('/(auth)/login');
-  };
-
   return (
-    <Tabs
+    <Stack
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
         headerShown: true,
-        tabBarButton: HapticTab,
+        headerStyle: {
+          backgroundColor: '#007AFF',
+        },
+        headerTintColor: '#fff',
+        headerTitleStyle: {
+          fontWeight: 'bold',
+        },
+        headerLeft: () => (
+          <View style={styles.titleBubble}>
+            <ThemedText style={styles.headerTitle}>StudyShelf</ThemedText>
+          </View>
+        ),
         headerRight: () => (
-          <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
-            <ThemedText style={styles.logoutText}>Logout</ThemedText>
+          <TouchableOpacity onPress={() => router.push('/(tabs)/profile')}>
+            <View style={styles.profileBubble}>
+              <Image source={AppImages.defaultProfile} style={styles.profileImage} />
+            </View>
           </TouchableOpacity>
         ),
-        headerTitle: () => (
-          <ThemedText type="defaultSemiBold">
-            Welcome, {username}!
-          </ThemedText>
-        ),
+        headerTitle: '',
       }}>
-      <Tabs.Screen
-        name="index"
+      <Stack.Screen name="index" />
+      <Stack.Screen 
+        name="profile" 
         options={{
-          title: 'Home',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+          headerLeft: undefined,
+          headerTitle: 'Profile',
         }}
       />
-      <Tabs.Screen
-        name="explore"
-        options={{
-          title: 'Explore',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
-        }}
-      />
-    </Tabs>
+    </Stack>
   );
 }
 
 const styles = StyleSheet.create({
-  logoutButton: {
+  titleBubble: {
+    backgroundColor: 'rgba(255, 255, 255, 0.25)',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 25,
+    marginLeft: 16,
+  },
+  headerTitle: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  profileBubble: {
+    backgroundColor: 'rgba(255, 255, 255, 0.25)',
+    padding: 8,
+    borderRadius: 30,
     marginRight: 16,
   },
-  logoutText: {
-    color: '#007AFF',
-    fontWeight: '600',
+  profileImage: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
   },
 });
