@@ -15,11 +15,7 @@ export default function TabLayout() {
       <Stack.Screen 
         name="profile" 
         options={{
-          headerStyle: {
-            backgroundColor: '#007AFF',
-          },
-          headerTintColor: '#fff',
-          headerTitle: 'Profile',
+          headerShown: false,
         }}
       />
     </Stack>

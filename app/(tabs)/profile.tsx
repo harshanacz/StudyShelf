@@ -1,10 +1,10 @@
 import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
 import { AppImages } from '@/constants/app-images';
 import { logout } from '@/store/auth-slice';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { Alert, Image, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Alert, Image, SafeAreaView, StatusBar, StyleSheet, TouchableOpacity, View } from 'react-native';
 
 export default function ProfileScreen() {
   const username = useAppSelector((state) => state.auth.username);
@@ -26,32 +26,52 @@ export default function ProfileScreen() {
   };
 
   return (
-    <ThemedView style={styles.container}>
-      <View style={styles.profileSection}>
-        <Image source={AppImages.defaultProfile} style={styles.profileImage} />
-        <ThemedText type="title" style={styles.username}>
-          {username}
-        </ThemedText>
-      </View>
-
-      <View style={styles.settingsSection}>
-        <ThemedText type="subtitle" style={styles.sectionTitle}>
-          Settings
-        </ThemedText>
-
-        <TouchableOpacity style={styles.settingItem} onPress={handleLogout}>
-          <ThemedText style={styles.settingText}>Logout</ThemedText>
-          <ThemedText style={styles.settingArrow}>›</ThemedText>
+    <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="dark-content" />
+      <View style={styles.content}>
+        <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+          <Ionicons name="arrow-back" size={24} color="#000" />
         </TouchableOpacity>
+
+        <View style={styles.profileSection}>
+          <Image source={AppImages.defaultProfile} style={styles.profileImage} />
+          <ThemedText style={styles.username}>{username}</ThemedText>
+        </View>
+
+        <View style={styles.settingsSection}>
+          <ThemedText style={styles.sectionTitle}>Settings</ThemedText>
+
+          <TouchableOpacity style={styles.settingItem} onPress={handleLogout}>
+            <View style={styles.settingLeft}>
+              <Ionicons name="log-out-outline" size={22} color="#ff3b30" />
+              <ThemedText style={styles.settingText}>Logout</ThemedText>
+            </View>
+            <Ionicons name="chevron-forward" size={20} color="#ccc" />
+          </TouchableOpacity>
+        </View>
       </View>
-    </ThemedView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#fff',
+  },
+  content: {
+    flex: 1,
     padding: 20,
+    paddingTop: (StatusBar.currentHeight || 0) + 10,
+  },
+  backButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#f5f5f5',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 20,
   },
   profileSection: {
     alignItems: 'center',
@@ -62,38 +82,41 @@ const styles = StyleSheet.create({
     height: 120,
     borderRadius: 60,
     marginBottom: 16,
-    borderWidth: 3,
-    borderColor: '#007AFF',
+    borderWidth: 2,
+    borderColor: '#000',
   },
   username: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#000',
     marginTop: 8,
   },
   settingsSection: {
     marginTop: 20,
   },
   sectionTitle: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#000',
     marginBottom: 16,
   },
   settingItem: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: '#f5f5f5',
     padding: 16,
     borderRadius: 12,
     marginBottom: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
+  },
+  settingLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
   },
   settingText: {
     fontSize: 16,
-    fontWeight: '500',
-  },
-  settingArrow: {
-    fontSize: 24,
-    opacity: 0.3,
+    fontWeight: '600',
+    color: '#000',
   },
 });
