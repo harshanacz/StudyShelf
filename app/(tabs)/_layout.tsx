@@ -18,6 +18,12 @@ export default function TabLayout() {
           headerShown: false,
         }}
       />
+      <Stack.Screen 
+        name="book-details" 
+        options={{
+          headerShown: false,
+        }}
+      />
     </Stack>
   );
 }

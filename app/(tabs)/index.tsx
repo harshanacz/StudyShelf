@@ -104,12 +104,25 @@ export default function HomeScreen() {
     return `https://covers.openlibrary.org/b/id/${coverId}-M.jpg`;
   };
 
+  const handleBookPress = (book: Book) => {
+    router.push({
+      pathname: '/(tabs)/book-details',
+      params: {
+        key: book.key,
+        title: book.title,
+        author_name: book.author_name?.join(', ') || 'Unknown Author',
+        cover_i: book.cover_i?.toString() || '',
+        first_publish_year: book.first_publish_year?.toString() || '',
+      },
+    });
+  };
+
   const renderBookCard = ({ item }: { item: Book }) => {
     const coverUrl = getCoverUrl(item.cover_i);
     const authors = item.author_name?.join(', ') || 'Unknown Author';
 
     return (
-      <TouchableOpacity style={styles.bookCard}>
+      <TouchableOpacity style={styles.bookCard} onPress={() => handleBookPress(item)}>
         <View style={styles.bookCover}>
           {coverUrl ? (
             <Image source={{ uri: coverUrl }} style={styles.coverImage} resizeMode="cover" />
