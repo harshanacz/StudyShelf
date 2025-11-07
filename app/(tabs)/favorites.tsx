@@ -1,4 +1,4 @@
-import BottomNav from '@/components/bottom-nav';
+
 import { ThemedText } from '@/components/themed-text';
 import { useAppSelector } from '@/store/hooks';
 import { Book } from '@/types/book';
@@ -88,7 +88,6 @@ export default function FavoritesScreen() {
           showsVerticalScrollIndicator={false}
         />
       </View>
-      <BottomNav />
     </SafeAreaView>
   );
 }

@@ -23,4 +23,14 @@ StudyShelf is a mobile app designed to help university and school students easil
     <td align="center">Register Screen</td>
     <td align="center">Home Screen</td>
   </tr>
+  <tr>
+    <td><img src="screenshots/bookdetail.png" alt="Book Details" width="250"/></td>
+    <td><img src="screenshots/favpage.png" alt="Favorites Page" width="250"/></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td align="center">Book Details</td>
+    <td align="center">Favorites Page</td>
+    <td></td>
+  </tr>
 </table>

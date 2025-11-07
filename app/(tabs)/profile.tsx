@@ -1,4 +1,3 @@
-import BottomNav from '@/components/bottom-nav';
 import { ThemedText } from '@/components/themed-text';
 import { AppImages } from '@/constants/app-images';
 import { logout } from '@/store/auth-slice';
@@ -51,7 +50,6 @@ export default function ProfileScreen() {
           </TouchableOpacity>
         </View>
       </View>
-      <BottomNav />
     </SafeAreaView>
   );
 }
