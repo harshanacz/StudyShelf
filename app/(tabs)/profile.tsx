@@ -1,3 +1,4 @@
+import BottomNav from '@/components/bottom-nav';
 import { ThemedText } from '@/components/themed-text';
 import { AppImages } from '@/constants/app-images';
 import { logout } from '@/store/auth-slice';
@@ -50,6 +51,7 @@ export default function ProfileScreen() {
           </TouchableOpacity>
         </View>
       </View>
+      <BottomNav />
     </SafeAreaView>
   );
 }
@@ -63,6 +65,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     paddingTop: (StatusBar.currentHeight || 0) + 10,
+    paddingBottom: 100,
   },
   backButton: {
     width: 40,

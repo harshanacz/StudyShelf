@@ -1,3 +1,4 @@
+import BottomNav from '@/components/bottom-nav';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { AppImages } from '@/constants/app-images';
@@ -239,6 +240,7 @@ export default function HomeScreen() {
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
         showsVerticalScrollIndicator={false}
       />
+      <BottomNav />
     </SafeAreaView>
   );
 }
@@ -260,6 +262,7 @@ const styles = StyleSheet.create({
   listContent: {
     padding: 20,
     paddingTop: (StatusBar.currentHeight || 0) + 10,
+    paddingBottom: 100,
   },
   header: {
     marginBottom: 24,
