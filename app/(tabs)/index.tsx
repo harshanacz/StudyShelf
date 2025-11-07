@@ -1,13 +1,18 @@
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { AppImages } from '@/constants/app-images';
 import { useAppSelector } from '@/store/hooks';
 import { Book, OpenLibraryResponse } from '@/types/book';
+import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
     ActivityIndicator,
     FlatList,
     Image,
     RefreshControl,
+    SafeAreaView,
+    StatusBar,
     StyleSheet,
     TextInput,
     TouchableOpacity,
@@ -16,13 +21,23 @@ import {
 
 const OPEN_LIBRARY_API = 'https://openlibrary.org/search.json';
 
+const CATEGORIES = [
+  { id: '1', name: 'Programming', query: 'programming' },
+  { id: '2', name: 'Science', query: 'science' },
+  { id: '3', name: 'Mathematics', query: 'mathematics' },
+  { id: '4', name: 'History', query: 'history' },
+  { id: '5', name: 'Literature', query: 'literature' },
+];
+
 export default function HomeScreen() {
   const username = useAppSelector((state) => state.auth.username);
+  const router = useRouter();
   const [books, setBooks] = useState<Book[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
   const fetchBooks = async (query: string = 'javascript') => {
     try {
@@ -64,8 +79,15 @@ export default function HomeScreen() {
 
   const handleSearch = () => {
     if (searchQuery.trim()) {
+      setSelectedCategory(null);
       fetchBooks(searchQuery);
     }
+  };
+
+  const handleCategoryPress = (category: typeof CATEGORIES[0]) => {
+    setSelectedCategory(category.id);
+    setSearchQuery('');
+    fetchBooks(category.query);
   };
 
   useEffect(() => {
@@ -114,19 +136,59 @@ export default function HomeScreen() {
 
   const renderHeader = () => (
     <View style={styles.header}>
-      <ThemedText style={styles.welcomeText}>Welcome back, {username}!</ThemedText>
-      <View style={styles.searchContainer}>
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Search for books..."
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-          onSubmitEditing={handleSearch}
-          returnKeyType="search"
-        />
-        <TouchableOpacity style={styles.searchButton} onPress={handleSearch}>
-          <ThemedText style={styles.searchButtonText}>Search</ThemedText>
+      <View style={styles.topSection}>
+        <View>
+          <ThemedText style={styles.greeting}>Hello, {username}</ThemedText>
+          <ThemedText style={styles.subtitle}>Welcome to StudyShelf</ThemedText>
+        </View>
+        <TouchableOpacity onPress={() => router.push('/(tabs)/profile')}>
+          <Image 
+            source={AppImages.defaultProfile} 
+            style={styles.profileImage}
+          />
         </TouchableOpacity>
+      </View>
+
+      <View style={styles.searchRow}>
+        <View style={styles.searchContainer}>
+          <Ionicons name="search" size={20} color="#999" style={styles.searchIconLeft} />
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Search"
+            placeholderTextColor="#999"
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            onSubmitEditing={handleSearch}
+            returnKeyType="search"
+          />
+        </View>
+        <TouchableOpacity style={styles.filterButton}>
+          <Ionicons name="options" size={24} color="#fff" />
+        </TouchableOpacity>
+      </View>
+      
+      <ThemedText style={styles.sectionTitle}>Discover Books</ThemedText>
+      
+      <View style={styles.categoriesContainer}>
+        {CATEGORIES.map((category) => (
+          <TouchableOpacity
+            key={category.id}
+            style={[
+              styles.categoryChip,
+              selectedCategory === category.id && styles.categoryChipActive,
+            ]}
+            onPress={() => handleCategoryPress(category)}
+          >
+            <ThemedText
+              style={[
+                styles.categoryText,
+                selectedCategory === category.id && styles.categoryTextActive,
+              ]}
+            >
+              {category.name}
+            </ThemedText>
+          </TouchableOpacity>
+        ))}
       </View>
     </View>
   );
@@ -150,7 +212,8 @@ export default function HomeScreen() {
   }
 
   return (
-    <ThemedView style={styles.container}>
+    <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="dark-content" />
       <FlatList
         data={books}
         renderItem={renderBookCard}
@@ -161,14 +224,16 @@ export default function HomeScreen() {
         numColumns={2}
         columnWrapperStyle={books.length > 0 ? styles.row : undefined}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+        showsVerticalScrollIndicator={false}
       />
-    </ThemedView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#fff',
   },
   centerContainer: {
     flex: 1,
@@ -180,39 +245,73 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   listContent: {
-    padding: 16,
+    padding: 20,
+    paddingTop: (StatusBar.currentHeight || 0) + 10,
   },
   header: {
-    marginBottom: 20,
+    marginBottom: 24,
   },
-  welcomeText: {
-    fontSize: 18,
-    fontWeight: '600',
-    marginBottom: 16,
+  topSection: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 24,
+    paddingTop: 10,
+  },
+  greeting: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#000',
+    marginBottom: 4,
+    lineHeight: 34,
+  },
+  subtitle: {
+    fontSize: 14,
+    color: '#999',
+    lineHeight: 20,
+  },
+  profileImage: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    borderWidth: 2,
+    borderColor: '#000',
+  },
+  searchRow: {
+    flexDirection: 'row',
+    gap: 12,
+    marginBottom: 24,
   },
   searchContainer: {
+    flex: 1,
     flexDirection: 'row',
-    gap: 8,
-    marginBottom: 16,
+    alignItems: 'center',
+    backgroundColor: '#f5f5f5',
+    borderRadius: 12,
+    paddingHorizontal: 16,
+  },
+  searchIconLeft: {
+    marginRight: 8,
   },
   searchInput: {
     flex: 1,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    padding: 12,
+    paddingVertical: 14,
     fontSize: 16,
-    backgroundColor: '#fff',
+    color: '#000',
   },
-  searchButton: {
-    backgroundColor: '#007AFF',
-    paddingHorizontal: 20,
-    borderRadius: 8,
+  filterButton: {
+    backgroundColor: '#1a1a1a',
+    width: 50,
+    height: 50,
+    borderRadius: 12,
     justifyContent: 'center',
+    alignItems: 'center',
   },
-  searchButtonText: {
-    color: '#fff',
-    fontWeight: '600',
+  sectionTitle: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#000',
+    marginBottom: 16,
   },
   row: {
     justifyContent: 'space-between',
@@ -222,20 +321,19 @@ const styles = StyleSheet.create({
     flex: 1,
     maxWidth: '48%',
     backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 12,
+    borderRadius: 16,
+    padding: 0,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 4,
+    overflow: 'hidden',
   },
   bookCover: {
     width: '100%',
-    height: 180,
-    marginBottom: 8,
-    borderRadius: 8,
-    overflow: 'hidden',
+    height: 200,
+    backgroundColor: '#f0f0f0',
   },
   coverImage: {
     width: '100%',
@@ -253,20 +351,24 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   bookInfo: {
-    gap: 4,
+    padding: 12,
+    gap: 6,
   },
   bookTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    lineHeight: 18,
+    fontSize: 15,
+    fontWeight: '700',
+    lineHeight: 20,
+    color: '#1a1a1a',
   },
   bookAuthor: {
-    fontSize: 12,
-    opacity: 0.7,
+    fontSize: 13,
+    color: '#666',
+    fontWeight: '500',
   },
   bookYear: {
-    fontSize: 11,
-    opacity: 0.5,
+    fontSize: 12,
+    color: '#999',
+    marginTop: 2,
   },
   emptyContainer: {
     padding: 40,
@@ -279,5 +381,31 @@ const styles = StyleSheet.create({
   },
   emptySubtext: {
     opacity: 0.6,
+  },
+  categoriesContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10,
+    marginTop: 16,
+  },
+  categoryChip: {
+    backgroundColor: '#f0f0f0',
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+  },
+  categoryChipActive: {
+    backgroundColor: '#007AFF',
+    borderColor: '#007AFF',
+  },
+  categoryText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#666',
+  },
+  categoryTextActive: {
+    color: '#fff',
   },
 });
