@@ -26,7 +26,10 @@ export default function BottomNav() {
           <Ionicons name="list-outline" size={24} color="#fff" />
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.navItem}>
+        <TouchableOpacity
+          style={styles.navItem}
+          onPress={() => router.push('/(tabs)/favorites')}
+        >
           <Ionicons name="heart-outline" size={24} color="#fff" />
         </TouchableOpacity>
 

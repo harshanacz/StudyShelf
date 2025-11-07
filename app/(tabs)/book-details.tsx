@@ -1,4 +1,6 @@
 import { ThemedText } from '@/components/themed-text';
+import { toggleFavorite } from '@/store/favorites-slice';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { Book } from '@/types/book';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -24,8 +26,24 @@ interface BookDetails extends Book {
 export default function BookDetailsScreen() {
   const params = useLocalSearchParams();
   const router = useRouter();
+  const dispatch = useAppDispatch();
+  const favorites = useAppSelector((state) => state.favorites.favorites);
   const [bookDetails, setBookDetails] = useState<BookDetails | null>(null);
   const [loading, setLoading] = useState(true);
+
+  const currentBook: Book = {
+    key: params.key as string,
+    title: params.title as string,
+    author_name: (params.author_name as string)?.split(','),
+    cover_i: params.cover_i ? parseInt(params.cover_i as string) : undefined,
+    first_publish_year: params.first_publish_year ? parseInt(params.first_publish_year as string) : undefined,
+  };
+
+  const isFavorite = favorites.some((fav) => fav.key === currentBook.key);
+
+  const handleFavoritePress = () => {
+    dispatch(toggleFavorite(currentBook));
+  };
 
   useEffect(() => {
     fetchBookDetails();
@@ -74,9 +92,18 @@ export default function BookDetailsScreen() {
       <StatusBar barStyle="dark-content" />
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.content}>
-          <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-            <Ionicons name="arrow-back" size={24} color="#000" />
-          </TouchableOpacity>
+          <View style={styles.topBar}>
+            <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+              <Ionicons name="arrow-back" size={24} color="#000" />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.favoriteButtonLarge} onPress={handleFavoritePress}>
+              <Ionicons
+                name={isFavorite ? 'heart' : 'heart-outline'}
+                size={24}
+                color={isFavorite ? '#ff3b30' : '#000'}
+              />
+            </TouchableOpacity>
+          </View>
 
           <View style={styles.coverContainer}>
             {coverUrl ? (
@@ -156,6 +183,13 @@ const styles = StyleSheet.create({
   content: {
     paddingTop: (StatusBar.currentHeight || 0) + 10,
   },
+  topBar: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+  },
   backButton: {
     width: 40,
     height: 40,
@@ -163,7 +197,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#f5f5f5',
     justifyContent: 'center',
     alignItems: 'center',
-    margin: 20,
+  },
+  favoriteButtonLarge: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#f5f5f5',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   coverContainer: {
     alignItems: 'center',

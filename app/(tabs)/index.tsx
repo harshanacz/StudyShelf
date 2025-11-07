@@ -2,7 +2,8 @@ import BottomNav from '@/components/bottom-nav';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { AppImages } from '@/constants/app-images';
-import { useAppSelector } from '@/store/hooks';
+import { toggleFavorite } from '@/store/favorites-slice';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { Book, OpenLibraryResponse } from '@/types/book';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -32,6 +33,8 @@ const CATEGORIES = [
 
 export default function HomeScreen() {
   const username = useAppSelector((state) => state.auth.username);
+  const favorites = useAppSelector((state) => state.favorites.favorites);
+  const dispatch = useAppDispatch();
   const router = useRouter();
   const [books, setBooks] = useState<Book[]>([]);
   const [loading, setLoading] = useState(true);
@@ -121,6 +124,12 @@ export default function HomeScreen() {
   const renderBookCard = ({ item }: { item: Book }) => {
     const coverUrl = getCoverUrl(item.cover_i);
     const authors = item.author_name?.join(', ') || 'Unknown Author';
+    const isFavorite = favorites.some((fav) => fav.key === item.key);
+
+    const handleFavoritePress = (e: any) => {
+      e.stopPropagation();
+      dispatch(toggleFavorite(item));
+    };
 
     return (
       <TouchableOpacity style={styles.bookCard} onPress={() => handleBookPress(item)}>
@@ -132,6 +141,13 @@ export default function HomeScreen() {
               <ThemedText style={styles.placeholderText}>No Cover</ThemedText>
             </View>
           )}
+          <TouchableOpacity style={styles.favoriteButton} onPress={handleFavoritePress}>
+            <Ionicons
+              name={isFavorite ? 'heart' : 'heart-outline'}
+              size={20}
+              color={isFavorite ? '#ff3b30' : '#fff'}
+            />
+          </TouchableOpacity>
         </View>
         <View style={styles.bookInfo}>
           <ThemedText style={styles.bookTitle} numberOfLines={2}>
@@ -350,6 +366,18 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 200,
     backgroundColor: '#f0f0f0',
+    position: 'relative',
+  },
+  favoriteButton: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   coverImage: {
     width: '100%',

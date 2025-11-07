@@ -19,6 +19,12 @@ export default function TabLayout() {
         }}
       />
       <Stack.Screen 
+        name="favorites" 
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen 
         name="book-details" 
         options={{
           headerShown: false,
