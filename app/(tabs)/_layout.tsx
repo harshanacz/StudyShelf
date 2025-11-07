@@ -1,20 +1,42 @@
-import { Tabs } from 'expo-router';
+import { Tabs, useRouter } from 'expo-router';
 import React from 'react';
+import { StyleSheet, TouchableOpacity } from 'react-native';
 
 import { HapticTab } from '@/components/haptic-tab';
+import { ThemedText } from '@/components/themed-text';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { logout } from '@/store/auth-slice';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
+  const username = useAppSelector((state) => state.auth.username);
+  const dispatch = useAppDispatch();
+  const router = useRouter();
+
+  const handleLogout = () => {
+    dispatch(logout());
+    router.replace('/(auth)/login');
+  };
 
   return (
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        headerShown: false,
+        headerShown: true,
         tabBarButton: HapticTab,
+        headerRight: () => (
+          <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
+            <ThemedText style={styles.logoutText}>Logout</ThemedText>
+          </TouchableOpacity>
+        ),
+        headerTitle: () => (
+          <ThemedText type="defaultSemiBold">
+            Welcome, {username}!
+          </ThemedText>
+        ),
       }}>
       <Tabs.Screen
         name="index"
@@ -33,3 +55,13 @@ export default function TabLayout() {
     </Tabs>
   );
 }
+
+const styles = StyleSheet.create({
+  logoutButton: {
+    marginRight: 16,
+  },
+  logoutText: {
+    color: '#007AFF',
+    fontWeight: '600',
+  },
+});
