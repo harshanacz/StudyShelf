@@ -43,12 +43,18 @@ export default function LoginScreen() {
       return;
     }
 
-    // Dummy authentication
-    if (username === 'student' && password === 'pass123') {
-      dispatch(login(username));
+    // Dummy authentication - trim whitespace for comparison
+    const trimmedUsername = username.trim();
+    const trimmedPassword = password.trim();
+
+    if (trimmedUsername === 'harshana' && trimmedPassword === 'pass123') {
+      dispatch(login(trimmedUsername));
       router.replace('/(tabs)');
     } else {
-      Alert.alert('Login Failed', 'Invalid username or password');
+      Alert.alert(
+        'Login Failed',
+        'Invalid username or password\n\nDemo credentials:\nUsername: harshana\nPassword: pass123'
+      );
     }
   };
 
@@ -67,6 +73,8 @@ export default function LoginScreen() {
             value={username}
             onChangeText={setUsername}
             autoCapitalize="none"
+            autoCorrect={false}
+            autoComplete="username"
           />
           {errors.username ? (
             <ThemedText style={styles.errorText}>{errors.username}</ThemedText>
@@ -81,6 +89,9 @@ export default function LoginScreen() {
             value={password}
             onChangeText={setPassword}
             secureTextEntry
+            autoCapitalize="none"
+            autoCorrect={false}
+            autoComplete="password"
           />
           {errors.password ? (
             <ThemedText style={styles.errorText}>{errors.password}</ThemedText>
