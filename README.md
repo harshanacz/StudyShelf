@@ -12,8 +12,15 @@ StudyShelf is a mobile app designed to help university and school students easil
 
 ## Screenshots
 
-### Login Screen
-![Login Screen](screenshots/login.png)
-
-### Register Screen
-![Register Screen](screenshots/register.png)
+<table>
+  <tr>
+    <td><img src="screenshots/login.png" alt="Login Screen" width="250"/></td>
+    <td><img src="screenshots/register.png" alt="Register Screen" width="250"/></td>
+    <td><img src="screenshots/home.png" alt="Home Screen" width="250"/></td>
+  </tr>
+  <tr>
+    <td align="center">Login Screen</td>
+    <td align="center">Register Screen</td>
+    <td align="center">Home Screen</td>
+  </tr>
+</table>
