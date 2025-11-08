@@ -1,92 +1,46 @@
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { AppImages } from '@/constants/app-images';
+import { useForm } from '@/hooks/use-form';
 import { login } from '@/store/auth-slice';
 import { useAppDispatch } from '@/store/hooks';
+import { registerSchema } from '@/utils/validation-schemas';
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
 import { Alert, Image, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 
+interface RegisterFormValues {
+  username: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+}
+
 export default function RegisterScreen() {
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [errors, setErrors] = useState({
-    username: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-  });
   const dispatch = useAppDispatch();
   const router = useRouter();
 
-  const validateEmail = (email: string) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
-
-  const validateForm = () => {
-    let valid = true;
-    const newErrors = {
-      username: '',
-      email: '',
-      password: '',
-      confirmPassword: '',
-    };
-
-    if (!username.trim()) {
-      newErrors.username = 'Username is required';
-      valid = false;
-    } else if (username.length < 3) {
-      newErrors.username = 'Username must be at least 3 characters';
-      valid = false;
-    }
-
-    if (!email.trim()) {
-      newErrors.email = 'Email is required';
-      valid = false;
-    } else if (!validateEmail(email)) {
-      newErrors.email = 'Please enter a valid email';
-      valid = false;
-    }
-
-    if (!password.trim()) {
-      newErrors.password = 'Password is required';
-      valid = false;
-    } else if (password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters';
-      valid = false;
-    }
-
-    if (!confirmPassword.trim()) {
-      newErrors.confirmPassword = 'Please confirm your password';
-      valid = false;
-    } else if (password !== confirmPassword) {
-      newErrors.confirmPassword = 'Passwords do not match';
-      valid = false;
-    }
-
-    setErrors(newErrors);
-    return valid;
-  };
-
-  const handleRegister = () => {
-    if (!validateForm()) {
-      return;
-    }
-
-    // Dummy registration - automatically log in
-    Alert.alert('Success', 'Account created successfully!', [
-      {
-        text: 'OK',
-        onPress: () => {
-          dispatch(login(username));
-          router.replace('/(tabs)');
-        },
+  const { values, errors, touched, isSubmitting, isFormValid, handleChange, handleBlur, handleSubmit } =
+    useForm<RegisterFormValues>({
+      initialValues: {
+        username: '',
+        email: '',
+        password: '',
+        confirmPassword: '',
       },
-    ]);
-  };
+      validationSchema: registerSchema,
+      onSubmit: (formValues) => {
+        // Dummy registration - automatically log in
+        Alert.alert('Success', 'Account created successfully!', [
+          {
+            text: 'OK',
+            onPress: () => {
+              dispatch(login(formValues.username));
+              router.replace('/(tabs)');
+            },
+          },
+        ]);
+      },
+    });
 
   return (
     <ThemedView style={styles.container}>
@@ -100,11 +54,12 @@ export default function RegisterScreen() {
           <TextInput
             style={styles.input}
             placeholder="Enter username"
-            value={username}
-            onChangeText={setUsername}
+            value={values.username}
+            onChangeText={handleChange('username')}
+            onBlur={handleBlur('username')}
             autoCapitalize="none"
           />
-          {errors.username ? (
+          {touched.username && errors.username ? (
             <ThemedText style={styles.errorText}>{errors.username}</ThemedText>
           ) : null}
         </View>
@@ -114,12 +69,13 @@ export default function RegisterScreen() {
           <TextInput
             style={styles.input}
             placeholder="Enter email"
-            value={email}
-            onChangeText={setEmail}
+            value={values.email}
+            onChangeText={handleChange('email')}
+            onBlur={handleBlur('email')}
             autoCapitalize="none"
             keyboardType="email-address"
           />
-          {errors.email ? (
+          {touched.email && errors.email ? (
             <ThemedText style={styles.errorText}>{errors.email}</ThemedText>
           ) : null}
         </View>
@@ -129,11 +85,16 @@ export default function RegisterScreen() {
           <TextInput
             style={styles.input}
             placeholder="Enter password"
-            value={password}
-            onChangeText={setPassword}
+            value={values.password}
+            onChangeText={handleChange('password')}
+            onBlur={handleBlur('password')}
             secureTextEntry
+            autoCapitalize="none"
+            autoCorrect={false}
+            autoComplete="off"
+            textContentType="none"
           />
-          {errors.password ? (
+          {touched.password && errors.password ? (
             <ThemedText style={styles.errorText}>{errors.password}</ThemedText>
           ) : null}
         </View>
@@ -143,17 +104,28 @@ export default function RegisterScreen() {
           <TextInput
             style={styles.input}
             placeholder="Confirm password"
-            value={confirmPassword}
-            onChangeText={setConfirmPassword}
+            value={values.confirmPassword}
+            onChangeText={handleChange('confirmPassword')}
+            onBlur={handleBlur('confirmPassword')}
             secureTextEntry
+            autoCapitalize="none"
+            autoCorrect={false}
+            autoComplete="off"
+            textContentType="none"
           />
-          {errors.confirmPassword ? (
+          {touched.confirmPassword && errors.confirmPassword ? (
             <ThemedText style={styles.errorText}>{errors.confirmPassword}</ThemedText>
           ) : null}
         </View>
 
-        <TouchableOpacity style={styles.button} onPress={handleRegister}>
-          <ThemedText style={styles.buttonText}>Register</ThemedText>
+        <TouchableOpacity
+          style={[styles.button, (!isFormValid || isSubmitting) && styles.buttonDisabled]}
+          onPress={handleSubmit}
+          disabled={!isFormValid || isSubmitting}
+        >
+          <ThemedText style={styles.buttonText}>
+            {isSubmitting ? 'Creating Account...' : 'Register'}
+          </ThemedText>
         </TouchableOpacity>
 
         <TouchableOpacity onPress={() => router.back()}>
@@ -218,6 +190,9 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: 'center',
     marginTop: 8,
+  },
+  buttonDisabled: {
+    opacity: 0.6,
   },
   buttonText: {
     color: '#fff',

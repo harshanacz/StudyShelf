@@ -1,62 +1,45 @@
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { AppImages } from '@/constants/app-images';
+import { useForm } from '@/hooks/use-form';
 import { login } from '@/store/auth-slice';
 import { useAppDispatch } from '@/store/hooks';
+import { loginSchema } from '@/utils/validation-schemas';
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
 import { Alert, Image, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 
+interface LoginFormValues {
+  username: string;
+  password: string;
+}
+
 export default function LoginScreen() {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [errors, setErrors] = useState({ username: '', password: '' });
   const dispatch = useAppDispatch();
   const router = useRouter();
 
-  const validateForm = () => {
-    let valid = true;
-    const newErrors = { username: '', password: '' };
+  const { values, errors, touched, isSubmitting, handleChange, handleBlur, handleSubmit } =
+    useForm<LoginFormValues>({
+      initialValues: {
+        username: '',
+        password: '',
+      },
+      validationSchema: loginSchema,
+      onSubmit: (formValues) => {
+        // Dummy authentication
+        const trimmedUsername = formValues.username.trim();
+        const trimmedPassword = formValues.password.trim();
 
-    if (!username.trim()) {
-      newErrors.username = 'Username is required';
-      valid = false;
-    } else if (username.length < 3) {
-      newErrors.username = 'Username must be at least 3 characters';
-      valid = false;
-    }
-
-    if (!password.trim()) {
-      newErrors.password = 'Password is required';
-      valid = false;
-    } else if (password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters';
-      valid = false;
-    }
-
-    setErrors(newErrors);
-    return valid;
-  };
-
-  const handleLogin = () => {
-    if (!validateForm()) {
-      return;
-    }
-
-    // Dummy authentication - trim whitespace for comparison
-    const trimmedUsername = username.trim();
-    const trimmedPassword = password.trim();
-
-    if (trimmedUsername === 'harshana' && trimmedPassword === 'pass123') {
-      dispatch(login(trimmedUsername));
-      router.replace('/(tabs)');
-    } else {
-      Alert.alert(
-        'Login Failed',
-        'Invalid username or password\n\nDemo credentials:\nUsername: harshana\nPassword: pass123'
-      );
-    }
-  };
+        if (trimmedUsername === 'harshana' && trimmedPassword === 'pass123') {
+          dispatch(login(trimmedUsername));
+          router.replace('/(tabs)');
+        } else {
+          Alert.alert(
+            'Login Failed',
+            'Invalid username or password\n\nDemo credentials:\nUsername: harshana\nPassword: pass123'
+          );
+        }
+      },
+    });
 
   return (
     <ThemedView style={styles.container}>
@@ -70,13 +53,14 @@ export default function LoginScreen() {
           <TextInput
             style={styles.input}
             placeholder="Enter username"
-            value={username}
-            onChangeText={setUsername}
+            value={values.username}
+            onChangeText={handleChange('username')}
+            onBlur={handleBlur('username')}
             autoCapitalize="none"
             autoCorrect={false}
             autoComplete="username"
           />
-          {errors.username ? (
+          {touched.username && errors.username ? (
             <ThemedText style={styles.errorText}>{errors.username}</ThemedText>
           ) : null}
         </View>
@@ -86,20 +70,27 @@ export default function LoginScreen() {
           <TextInput
             style={styles.input}
             placeholder="Enter password"
-            value={password}
-            onChangeText={setPassword}
+            value={values.password}
+            onChangeText={handleChange('password')}
+            onBlur={handleBlur('password')}
             secureTextEntry
             autoCapitalize="none"
             autoCorrect={false}
             autoComplete="password"
           />
-          {errors.password ? (
+          {touched.password && errors.password ? (
             <ThemedText style={styles.errorText}>{errors.password}</ThemedText>
           ) : null}
         </View>
 
-        <TouchableOpacity style={styles.button} onPress={handleLogin}>
-          <ThemedText style={styles.buttonText}>Login</ThemedText>
+        <TouchableOpacity
+          style={[styles.button, isSubmitting && styles.buttonDisabled]}
+          onPress={handleSubmit}
+          disabled={isSubmitting}
+        >
+          <ThemedText style={styles.buttonText}>
+            {isSubmitting ? 'Logging in...' : 'Login'}
+          </ThemedText>
         </TouchableOpacity>
 
         <TouchableOpacity onPress={() => router.push('/(auth)/register')}>
@@ -164,6 +155,9 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: 'center',
     marginTop: 8,
+  },
+  buttonDisabled: {
+    opacity: 0.6,
   },
   buttonText: {
     color: '#fff',

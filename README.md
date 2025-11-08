@@ -4,11 +4,23 @@ StudyShelf is a mobile app designed to help university and school students easil
 
 ## Features
 
-- **Authentication** - Secure login and registration
+- **Authentication** - Secure login and registration with form validation
 - **Book Search** - Search for books using Open Library API
-- **Book Discovery** - Browse computer science and programming books
+- **Book Discovery** - Browse books by categories (Programming, Science, Mathematics, etc.)
+- **Book Details** - View full book information including description, publish year, and page count
+- **Favorites** - Save and manage favorite books with Redux state management
 - **User Profile** - View profile and manage settings
-- **Responsive Design** - Clean, modern UI with book cards
+- **Modern UI** - Clean, iOS-style design with bottom tab navigation
+- **Responsive Design** - Optimized for mobile devices
+
+## Tech Stack
+
+- **React Native** with Expo
+- **TypeScript** for type safety
+- **Expo Router** for file-based navigation
+- **Redux Toolkit** for global state management
+- **Open Library API** for book data
+- **Ionicons** for icons
 
 ## Screenshots
 
