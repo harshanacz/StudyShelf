@@ -1,6 +1,7 @@
 
 import { ThemedText } from '@/components/themed-text';
-import { useAppSelector } from '@/store/hooks';
+import { toggleFavorite } from '@/store/favorites-slice';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { Book } from '@/types/book';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -8,6 +9,7 @@ import { FlatList, Image, SafeAreaView, StatusBar, StyleSheet, TouchableOpacity,
 
 export default function FavoritesScreen() {
   const favorites = useAppSelector((state) => state.favorites.favorites);
+  const dispatch = useAppDispatch();
   const router = useRouter();
 
   const getCoverUrl = (coverId?: number) => {
@@ -28,6 +30,11 @@ export default function FavoritesScreen() {
     });
   };
 
+  const handleRemoveFavorite = (e: any, book: Book) => {
+    e.stopPropagation();
+    dispatch(toggleFavorite(book));
+  };
+
   const renderBookCard = ({ item }: { item: Book }) => {
     const coverUrl = getCoverUrl(item.cover_i);
     const authors = item.author_name?.join(', ') || 'Unknown Author';
@@ -42,6 +49,12 @@ export default function FavoritesScreen() {
               <ThemedText style={styles.placeholderText}>No Cover</ThemedText>
             </View>
           )}
+          <TouchableOpacity
+            style={styles.favoriteButton}
+            onPress={(e) => handleRemoveFavorite(e, item)}
+          >
+            <Ionicons name="heart" size={20} color="#ff3b30" />
+          </TouchableOpacity>
         </View>
         <View style={styles.bookInfo}>
           <ThemedText style={styles.bookTitle} numberOfLines={2}>
@@ -142,6 +155,18 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 200,
     backgroundColor: '#f0f0f0',
+    position: 'relative',
+  },
+  favoriteButton: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   coverImage: {
     width: '100%',
