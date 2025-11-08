@@ -1,6 +1,7 @@
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { AppImages } from '@/constants/app-images';
+import { useTheme } from '@/hooks/use-theme';
 import { toggleFavorite } from '@/store/favorites-slice';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { Book, OpenLibraryResponse } from '@/types/book';
@@ -35,6 +36,7 @@ export default function HomeScreen() {
   const favorites = useAppSelector((state) => state.favorites.favorites);
   const dispatch = useAppDispatch();
   const router = useRouter();
+  const { colors, isDark } = useTheme();
   const [books, setBooks] = useState<Book[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -131,8 +133,8 @@ export default function HomeScreen() {
     };
 
     return (
-      <TouchableOpacity style={styles.bookCard} onPress={() => handleBookPress(item)}>
-        <View style={styles.bookCover}>
+      <TouchableOpacity style={[styles.bookCard, { backgroundColor: colors.card }]} onPress={() => handleBookPress(item)}>
+        <View style={[styles.bookCover, { backgroundColor: colors.input }]}>
           {coverUrl ? (
             <Image source={{ uri: coverUrl }} style={styles.coverImage} resizeMode="cover" />
           ) : (
@@ -167,36 +169,36 @@ export default function HomeScreen() {
     <View style={styles.header}>
       <View style={styles.topSection}>
         <View>
-          <ThemedText style={styles.greeting}>Hello, {username}</ThemedText>
-          <ThemedText style={styles.subtitle}>Welcome to StudyShelf</ThemedText>
+          <ThemedText style={[styles.greeting, { color: colors.text }]}>Hello, {username}</ThemedText>
+          <ThemedText style={[styles.subtitle, { color: colors.textTertiary }]}>Welcome to StudyShelf</ThemedText>
         </View>
         <TouchableOpacity onPress={() => router.push('/(tabs)/profile')}>
           <Image 
             source={AppImages.defaultProfile} 
-            style={styles.profileImage}
+            style={[styles.profileImage, { borderColor: colors.text }]}
           />
         </TouchableOpacity>
       </View>
 
       <View style={styles.searchRow}>
-        <View style={styles.searchContainer}>
-          <Ionicons name="search" size={20} color="#999" style={styles.searchIconLeft} />
+        <View style={[styles.searchContainer, { backgroundColor: colors.input }]}>
+          <Ionicons name="search" size={20} color={colors.textTertiary} style={styles.searchIconLeft} />
           <TextInput
-            style={styles.searchInput}
+            style={[styles.searchInput, { color: colors.text }]}
             placeholder="Search"
-            placeholderTextColor="#999"
+            placeholderTextColor={colors.textTertiary}
             value={searchQuery}
             onChangeText={setSearchQuery}
             onSubmitEditing={handleSearch}
             returnKeyType="search"
           />
         </View>
-        <TouchableOpacity style={styles.filterButton}>
-          <Ionicons name="options" size={24} color="#fff" />
+        <TouchableOpacity style={[styles.filterButton, { backgroundColor: colors.card }]}>
+          <Ionicons name="options" size={24} color={colors.text} />
         </TouchableOpacity>
       </View>
       
-      <ThemedText style={styles.sectionTitle}>Discover Books</ThemedText>
+      <ThemedText style={[styles.sectionTitle, { color: colors.text }]}>Discover Books</ThemedText>
       
       <View style={styles.categoriesContainer}>
         {CATEGORIES.map((category) => (
@@ -204,13 +206,15 @@ export default function HomeScreen() {
             key={category.id}
             style={[
               styles.categoryChip,
-              selectedCategory === category.id && styles.categoryChipActive,
+              { backgroundColor: colors.input, borderColor: colors.border },
+              selectedCategory === category.id && { backgroundColor: colors.primary, borderColor: colors.primary },
             ]}
             onPress={() => handleCategoryPress(category)}
           >
             <ThemedText
               style={[
                 styles.categoryText,
+                { color: colors.textSecondary },
                 selectedCategory === category.id && styles.categoryTextActive,
               ]}
             >
@@ -241,8 +245,8 @@ export default function HomeScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" />
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+      <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
       <FlatList
         data={books}
         renderItem={renderBookCard}
@@ -291,13 +295,11 @@ const styles = StyleSheet.create({
   greeting: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#000',
     marginBottom: 4,
     lineHeight: 34,
   },
   subtitle: {
     fontSize: 14,
-    color: '#999',
     lineHeight: 20,
   },
   profileImage: {
@@ -305,7 +307,6 @@ const styles = StyleSheet.create({
     height: 56,
     borderRadius: 28,
     borderWidth: 2,
-    borderColor: '#000',
   },
   searchRow: {
     flexDirection: 'row',
@@ -316,7 +317,6 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#f5f5f5',
     borderRadius: 12,
     paddingHorizontal: 16,
   },
@@ -327,10 +327,8 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingVertical: 14,
     fontSize: 16,
-    color: '#000',
   },
   filterButton: {
-    backgroundColor: '#1a1a1a',
     width: 50,
     height: 50,
     borderRadius: 12,
@@ -340,7 +338,6 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 22,
     fontWeight: 'bold',
-    color: '#000',
     marginBottom: 16,
   },
   row: {

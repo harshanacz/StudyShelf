@@ -1,4 +1,5 @@
 import { ThemedText } from '@/components/themed-text';
+import { useTheme } from '@/hooks/use-theme';
 import { toggleFavorite } from '@/store/favorites-slice';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { Book } from '@/types/book';
@@ -28,6 +29,7 @@ export default function BookDetailsScreen() {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const favorites = useAppSelector((state) => state.favorites.favorites);
+  const { colors, isDark } = useTheme();
   const [bookDetails, setBookDetails] = useState<BookDetails | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -75,10 +77,10 @@ export default function BookDetailsScreen() {
 
   if (loading) {
     return (
-      <SafeAreaView style={styles.container}>
-        <StatusBar barStyle="dark-content" />
+      <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+        <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#007AFF" />
+          <ActivityIndicator size="large" color={colors.primary} />
         </View>
       </SafeAreaView>
     );
@@ -88,19 +90,19 @@ export default function BookDetailsScreen() {
   const authors = params.author_name ? (params.author_name as string).split(',') : ['Unknown Author'];
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" />
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+      <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.content}>
           <View style={styles.topBar}>
-            <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-              <Ionicons name="arrow-back" size={24} color="#000" />
+            <TouchableOpacity style={[styles.backButton, { backgroundColor: colors.input }]} onPress={() => router.back()}>
+              <Ionicons name="arrow-back" size={24} color={colors.text} />
             </TouchableOpacity>
-            <TouchableOpacity style={styles.favoriteButtonLarge} onPress={handleFavoritePress}>
+            <TouchableOpacity style={[styles.favoriteButtonLarge, { backgroundColor: colors.input }]} onPress={handleFavoritePress}>
               <Ionicons
                 name={isFavorite ? 'heart' : 'heart-outline'}
                 size={24}
-                color={isFavorite ? '#ff3b30' : '#000'}
+                color={isFavorite ? colors.error : colors.text}
               />
             </TouchableOpacity>
           </View>
@@ -173,7 +175,6 @@ export default function BookDetailsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
   },
   loadingContainer: {
     flex: 1,
@@ -194,7 +195,6 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#f5f5f5',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -202,7 +202,6 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#f5f5f5',
     justifyContent: 'center',
     alignItems: 'center',
   },

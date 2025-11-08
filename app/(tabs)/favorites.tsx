@@ -1,5 +1,6 @@
 
 import { ThemedText } from '@/components/themed-text';
+import { useTheme } from '@/hooks/use-theme';
 import { toggleFavorite } from '@/store/favorites-slice';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { Book } from '@/types/book';
@@ -11,6 +12,7 @@ export default function FavoritesScreen() {
   const favorites = useAppSelector((state) => state.favorites.favorites);
   const dispatch = useAppDispatch();
   const router = useRouter();
+  const { colors, isDark } = useTheme();
 
   const getCoverUrl = (coverId?: number) => {
     if (!coverId) return null;
@@ -40,8 +42,8 @@ export default function FavoritesScreen() {
     const authors = item.author_name?.join(', ') || 'Unknown Author';
 
     return (
-      <TouchableOpacity style={styles.bookCard} onPress={() => handleBookPress(item)}>
-        <View style={styles.bookCover}>
+      <TouchableOpacity style={[styles.bookCard, { backgroundColor: colors.card }]} onPress={() => handleBookPress(item)}>
+        <View style={[styles.bookCover, { backgroundColor: colors.input }]}>
           {coverUrl ? (
             <Image source={{ uri: coverUrl }} style={styles.coverImage} resizeMode="cover" />
           ) : (
@@ -82,8 +84,8 @@ export default function FavoritesScreen() {
   );
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" />
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+      <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
       <View style={styles.content}>
         <View style={styles.header}>
           <ThemedText style={styles.title}>My Favorites</ThemedText>

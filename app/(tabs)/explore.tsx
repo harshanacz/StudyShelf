@@ -1,4 +1,5 @@
 import { ThemedText } from '@/components/themed-text';
+import { useTheme } from '@/hooks/use-theme';
 import { toggleFavorite } from '@/store/favorites-slice';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { Book, OpenLibraryResponse } from '@/types/book';
@@ -13,7 +14,7 @@ import {
   StatusBar,
   StyleSheet,
   TouchableOpacity,
-  View
+  View,
 } from 'react-native';
 
 const OPEN_LIBRARY_API = 'https://openlibrary.org/search.json';
@@ -29,6 +30,7 @@ export default function ExploreScreen() {
   const favorites = useAppSelector((state) => state.favorites.favorites);
   const dispatch = useAppDispatch();
   const router = useRouter();
+  const { colors, isDark } = useTheme();
 
   const [categories, setCategories] = useState<CategorySection[]>([
     { title: 'New Releases', query: 'new', books: [], loading: true },
@@ -98,7 +100,7 @@ export default function ExploreScreen() {
         style={styles.bookItem}
         onPress={() => handleBookPress(book)}
       >
-        <View style={styles.bookCover}>
+        <View style={[styles.bookCover, { backgroundColor: colors.input }]}>
           {coverUrl ? (
             <Image source={{ uri: coverUrl }} style={styles.coverImage} resizeMode="cover" />
           ) : (
@@ -158,8 +160,8 @@ export default function ExploreScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" />
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+      <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
           <ThemedText style={styles.title}>Explore</ThemedText>
