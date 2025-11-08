@@ -38,11 +38,11 @@ StudyShelf is a mobile app designed to help university and school students easil
   <tr>
     <td><img src="screenshots/bookdetail.png" alt="Book Details" width="250"/></td>
     <td><img src="screenshots/favpage.png" alt="Favorites Page" width="250"/></td>
-    <td></td>
+    <td><img src="screenshots/explore.png" alt="Explore Page" width="250"/></td>
   </tr>
   <tr>
     <td align="center">Book Details</td>
     <td align="center">Favorites Page</td>
-    <td></td>
+    <td align="center">Explore Page</td>
   </tr>
 </table>
