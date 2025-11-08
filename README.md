@@ -24,6 +24,20 @@ StudyShelf is a mobile app designed to help university and school students easil
 
 ## Screenshots
 
+### Onboarding
+<table>
+  <tr>
+    <td><img src="screenshots/onboard1.png" alt="Onboarding 1" width="250"/></td>
+    <td><img src="screenshots/onboard2.png" alt="Onboarding 2" width="250"/></td>
+    <td><img src="screenshots/onboard3.png" alt="Onboarding 3" width="250"/></td>
+  </tr>
+  <tr>
+    <td align="center">Find Books Fast</td>
+    <td align="center">Build Your Library</td>
+    <td align="center">Study Smarter</td>
+  </tr>
+</table>
+
 ### Light Mode
 <table>
   <tr>
