@@ -24,6 +24,7 @@ StudyShelf is a mobile app designed to help university and school students easil
 
 ## Screenshots
 
+### Light Mode
 <table>
   <tr>
     <td><img src="screenshots/login.png" alt="Login Screen" width="250"/></td>
@@ -44,5 +45,29 @@ StudyShelf is a mobile app designed to help university and school students easil
     <td align="center">Book Details</td>
     <td align="center">Favorites Page</td>
     <td align="center">Explore Page</td>
+  </tr>
+</table>
+
+### Dark Mode
+<table>
+  <tr>
+    <td><img src="screenshots/home_dark.png" alt="Home Screen Dark" width="250"/></td>
+    <td><img src="screenshots/explore_dark.png" alt="Explore Page Dark" width="250"/></td>
+    <td><img src="screenshots/bookdetail_dark.png" alt="Book Details Dark" width="250"/></td>
+  </tr>
+  <tr>
+    <td align="center">Home Screen</td>
+    <td align="center">Explore Page</td>
+    <td align="center">Book Details</td>
+  </tr>
+  <tr>
+    <td><img src="screenshots/favpage_dark.png" alt="Favorites Page Dark" width="250"/></td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td align="center">Favorites Page</td>
+    <td></td>
+    <td></td>
   </tr>
 </table>
