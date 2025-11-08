@@ -14,20 +14,24 @@ function RootLayoutNav() {
   const segments = useSegments();
   const router = useRouter();
   const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
+  const hasSeenOnboarding = useAppSelector((state) => state.onboarding.hasSeenOnboarding);
 
   useEffect(() => {
     if (!segments.length) return;
 
     const inAuthGroup = segments[0] === '(auth)';
+    const inOnboardingGroup = segments[0] === '(onboarding)';
 
     setTimeout(() => {
-      if (!isAuthenticated && !inAuthGroup) {
+      if (!hasSeenOnboarding && !inOnboardingGroup) {
+        router.replace('/(onboarding)');
+      } else if (!isAuthenticated && !inAuthGroup && !inOnboardingGroup) {
         router.replace('/(auth)/login');
       } else if (isAuthenticated && inAuthGroup) {
         router.replace('/(tabs)');
       }
     }, 1);
-  }, [isAuthenticated, segments]);
+  }, [isAuthenticated, hasSeenOnboarding, segments]);
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>

@@ -1,6 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit';
 import authReducer from './auth-slice';
 import favoritesReducer from './favorites-slice';
+import onboardingReducer from './onboarding-slice';
 import themeReducer from './theme-slice';
 
 export const store = configureStore({
@@ -8,6 +9,7 @@ export const store = configureStore({
     auth: authReducer,
     favorites: favoritesReducer,
     theme: themeReducer,
+    onboarding: onboardingReducer,
   },
 });
 
